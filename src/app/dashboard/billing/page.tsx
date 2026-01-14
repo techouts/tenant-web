@@ -37,9 +37,15 @@ function PlanDetails() {
   const { toast } = useToast();
 
   const [plans, setPlans] = useState([]);
-  const tenantId = JSON.parse(
-    global?.window?.localStorage.getItem("userData") || "{}"
-  )?.user?.tenantId;
+  const [tenantId, setTenantId] = useState<string | null>(null);
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem("userData");
+  if (storedUser) {
+    const parsed = JSON.parse(storedUser);
+    setTenantId(parsed?.user?.tenantId ?? null);
+  }
+  }, []);
   const [userplan, setUserplan] = useState<{
     tenant_domain: string;
     plan: string;

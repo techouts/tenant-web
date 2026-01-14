@@ -85,6 +85,10 @@ export default function DashboardOverviewPage() {
     if (TenantDetails) {
       setTenantDetails(TenantDetails);
     }
+    global?.window?.localStorage.setItem(
+      "secret-key",
+      JSON.stringify(TenantDetails?.secret_key || "")
+    );
   };
 
   useEffect(() => {
