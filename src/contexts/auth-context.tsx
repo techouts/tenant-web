@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (loggedInUser?.user?.role === "admin") {
       router.push("/admin");
     } else {
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     }
   };
 
@@ -59,13 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
     setUser(signedUpUser);
     sessionStorage.setItem("user", JSON.stringify(signedUpUser));
-    router.push("/dashboard");
+    window.location.href = "/dashboard";
   };
 
   const logout = () => {
     setUser(null);
     localStorage.clear();
-    router.push("/");
+    window.location.href = "/";
   };
 
   const value = {

@@ -55,7 +55,6 @@ export const PurchasePlan = async (planId: number, tenantId: number) => {
 
 export const getTenantDetails = async () => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/tenant-credentials/`;
-
   const response = await handler.apiCall(
     url,
     "GET",
