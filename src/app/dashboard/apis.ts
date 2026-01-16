@@ -152,9 +152,11 @@ export const uploadCatalog = async (file: any) => {
   formData.append("file", file);
   const response = await handler.apiCall(url, "POST", formData, {
     Authorization: `Bearer ${accessToken}`,
+    client: client,
   });
   return response?.data;
 };
+
 export const search = async (query: any) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}api/feature/search?q=${query}&source=ginger`;
   const response = await handler.apiCall(
