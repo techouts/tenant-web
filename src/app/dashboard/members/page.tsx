@@ -290,9 +290,7 @@ export const MembersList = ({ membersData, loading, fetchData }: any) => {
                         <div className="flex items-center gap-3">
                           <Avatar>
                             <AvatarImage src={member?.avatarUrl} />
-                            <AvatarFallback>
-                              {member?.username?.charAt(0)}
-                            </AvatarFallback>
+                            <AvatarFallback>{member?.username}</AvatarFallback>
                           </Avatar>
                           <span className="font-medium">
                             {member?.username}
@@ -378,7 +376,7 @@ export const MembersList = ({ membersData, loading, fetchData }: any) => {
                 onClick={() =>
                   handleStatusSave(
                     status === "activate" ? false : true,
-                    selectedTenant?.email
+                    selectedTenant?.email,
                   )
                 }
                 className="px-4 py-2 bg-primary text-black rounded-md"

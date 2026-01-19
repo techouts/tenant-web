@@ -48,12 +48,13 @@ const quickLinks = [
 ];
 
 export default function DashboardOverviewPage() {
-  const { user } = useAuth();
-
   const planDetails =
     JSON.parse(
-      global?.window?.localStorage.getItem("userPlanDetails") || "{}"
+      global?.window?.localStorage.getItem("userPlanDetails") || "{}",
     ) || "";
+  const user =
+    JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")
+      ?.user || "";
 
   const [usageToday, setUsageToday] = useState<any | null>(null);
   const [tenantDetails, setTenantDetails] = useState<{
@@ -78,7 +79,7 @@ export default function DashboardOverviewPage() {
         "userPlanDetails",
         JSON.stringify({
           ...userPlanDetails,
-        })
+        }),
       );
     }
     if (TenantDetails) {
@@ -86,7 +87,7 @@ export default function DashboardOverviewPage() {
     }
     global?.window?.localStorage.setItem(
       "secret-key",
-      JSON.stringify(TenantDetails?.secret_key || "")
+      JSON.stringify(TenantDetails?.secret_key || ""),
     );
   };
 
@@ -97,7 +98,7 @@ export default function DashboardOverviewPage() {
   return (
     <DashboardShell>
       <DashboardHeader
-        title={`Welcome, ${user?.name?.split(" ")[0]}!`}
+        title={`Welcome, ${user?.tenant}`}
         description="Here's a quick look at your Forward account."
       />
       <div className="flex gap-4">
