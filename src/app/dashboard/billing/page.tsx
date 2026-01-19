@@ -37,14 +37,15 @@ function PlanDetails() {
   const { toast } = useToast();
 
   const [plans, setPlans] = useState([]);
-  const [tenantId, setTenantId] = useState<string | null>(null);
+  const [tenantId, setTenantId] = useState<string>("");
 
   useEffect(() => {
-  const storedUser = localStorage.getItem("userData");
-  if (storedUser) {
-    const parsed = JSON.parse(storedUser);
-    setTenantId(parsed?.user?.tenantId ?? null);
-  }
+    const storedUser =
+      JSON.parse(localStorage.getItem("userData") || "{}") || {};
+    if (storedUser) {
+      const parsed = storedUser;
+      setTenantId(parsed?.user?.tenantId ?? null);
+    }
   }, []);
   const [userplan, setUserplan] = useState<{
     tenant_domain: string;
@@ -110,7 +111,7 @@ function PlanDetails() {
                       userplan?.plan === plan?.name && "border-primary",
                       userplan?.is_trial === false &&
                         plan?.name === "Free" &&
-                        "pointer-events-none cursor-not-allowed"
+                        "pointer-events-none cursor-not-allowed",
                     )}
                   >
                     <CardHeader>
@@ -148,8 +149,8 @@ function PlanDetails() {
                       <Button
                         className="w-full"
                         disabled={
-                          userplan?.plan === plan?.name &&
-                          (userplan?.is_trial ?? false) ||
+                          (userplan?.plan === plan?.name &&
+                            (userplan?.is_trial ?? false)) ||
                           plan?.name === "Free"
                         }
                         onClick={() => handlePlanChange(plan?.id)}

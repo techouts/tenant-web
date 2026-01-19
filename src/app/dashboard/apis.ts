@@ -44,7 +44,7 @@ export const DashboardPlans = async () => {
   }
 };
 
-export const PurchasePlan = async (planId: number, tenantId: number) => {
+export const PurchasePlan = async (planId: number, tenantId: string) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/subscription/purchase/`;
   const payload = {
     plan_id: planId,
