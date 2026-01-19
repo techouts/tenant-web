@@ -50,7 +50,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const userRole = JSON.parse(
     global?.window?.localStorage.getItem("userData") || "{}"
-  )?.user?.role;
+  )?.user?.role || "";
 
   React.useEffect(() => {
     if (!loading && !isAuthenticated) {

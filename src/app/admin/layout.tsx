@@ -30,9 +30,9 @@ export default function DashboardLayout({
   const { isAuthenticated, loading, logout, user } = useAuth();
   const router = useRouter();
 
-  const role = JSON.parse(
-    global?.window?.localStorage?.getItem("userData") || "{}"
-  )?.user?.role;
+  const role =
+    JSON.parse(global?.window?.localStorage?.getItem("userData") || "{}")?.user
+      ?.role || "";
 
   React.useEffect(() => {
     if (!loading && !isAuthenticated) {

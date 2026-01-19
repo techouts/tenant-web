@@ -1,11 +1,14 @@
 import { handler } from "@/services/apiService";
 
 const accessToken =
-  JSON.parse(localStorage.getItem("userData") || "{}")?.accessToken || "";
+  JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")
+    ?.accessToken || "";
 const client =
-  JSON.parse(localStorage.getItem("userData") || "{}")?.user?.tenant || "";
+  JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
+    ?.tenant || "";
 
-const secretKey = JSON.parse(localStorage.getItem("secret-key") || "{}") || "";
+const secretKey =
+  JSON.parse(global?.window?.localStorage.getItem("secret-key") || "{}") || "";
 
 export const fetchApiUsageData = async () => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/api-usage/`;
@@ -15,7 +18,7 @@ export const fetchApiUsageData = async () => {
     {},
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   if (response) {
     return response?.data?.api_usage;
@@ -28,7 +31,7 @@ export const TenantSubscriptionPlan = async () => {
     url,
     "GET",
     {},
-    { Authorization: `Bearer ${accessToken}` }
+    { Authorization: `Bearer ${accessToken}` },
   );
   return response?.data;
 };
@@ -61,7 +64,7 @@ export const getTenantDetails = async () => {
     {},
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
@@ -75,7 +78,7 @@ export const getMembers = async () => {
     {},
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
@@ -91,7 +94,7 @@ export const removeUser = async (email: string) => {
     },
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
@@ -107,14 +110,14 @@ export const updateUser = async (data: any) => {
     },
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
 
 export const activateOrDeactivateMembers = async (
   status: boolean,
-  emailId: string
+  emailId: string,
 ) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/user-status/`;
 
@@ -127,7 +130,7 @@ export const activateOrDeactivateMembers = async (
     },
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
@@ -140,7 +143,7 @@ export const getsubscriptionHistory = async () => {
     {},
     {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   );
   return response?.data;
 };
@@ -165,7 +168,7 @@ export const search = async (query: any) => {
     {
       "X-SECRET-KEY": secretKey,
       client: client,
-    }
+    },
   );
   return response?.data;
 };
