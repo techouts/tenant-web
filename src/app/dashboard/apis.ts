@@ -173,8 +173,15 @@ export const search = async (query: any) => {
   return response?.data;
 };
 
-export const fetchBussiness = async () => {
+export const fetchandUpdateBussiness = async (method: string, payload: any) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/business/`;
+  const response = await handler.apiCall(url, method, payload, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+  return response?.data;
+};
+export const fetchCatalogTypes = async () => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/catalog/list/`;
   const response = await handler.apiCall(
     url,
     "GET",

@@ -18,7 +18,8 @@ export const SubscriptionPlansTable = ({
           "Daily Limit",
           "Monthly Limit",
           "Api Rate Limit",
-          "Active",
+          "Status",
+          "Action",
         ]
       : ["Tenant Id", "Tenant Name", "Plan", "End Date", "Trial", "Days Left"];
   return (
@@ -71,15 +72,25 @@ export const SubscriptionPlansTable = ({
                 )}
                 {type === "subscriptionPlans" && (
                   <td className="p-3">
-                    <span
-                      className={`px-2 py-1 rounded-sm text-xs ${
+                    <p
+                      className={`px-2 py-1 text-center rounded-sm text-xs ${
                         plan?.is_active
                           ? "bg-accent text-accent-foreground"
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {plan?.is_active ? "Active" : "Inactive"}
-                    </span>
+                    </p>
+                  </td>
+                )}
+                {type === "subscriptionPlans" && (
+                  <td className="p-3">
+                    <button
+                      // onClick={() => openStatusModal(member)}
+                      className="px-3 py-1 rounded-md border text-xs hover:bg-muted min-w-[90px]"
+                    >
+                      {plan?.is_active ? "Deactivate" : "Activate"}
+                    </button>
                   </td>
                 )}
               </tr>

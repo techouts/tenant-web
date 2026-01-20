@@ -118,7 +118,7 @@ function PlanDetails() {
                       <CardTitle>{plan?.name}</CardTitle>
                       <div className="flex items-baseline ">
                         <span className="text-3xl font-bold">
-                          ${plan?.price}
+                          ₹{plan?.price}
                         </span>
                         <span className="text-muted-foreground">
                           /{plan?.billing_cycle}
@@ -142,7 +142,7 @@ function PlanDetails() {
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <CheckCircle className="h-4 w-4 text-accent" />
-                        <span>{plan?.trial_days} Days Trial</span>
+                        <span>{plan?.trial_days}Days Trial</span>
                       </div>
                     </CardContent>
                     <CardContent>

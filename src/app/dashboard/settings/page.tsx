@@ -26,26 +26,28 @@ import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { Check, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
-import { fetchBussiness } from "../apis";
+import { fetchandUpdateBussiness, fetchCatalogTypes } from "../apis";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const profileSchema = z.object({
   businessName: z.string().min(2, "Business name is required."),
-  email: z.string().email(),
+  catalog: z.string(),
 });
 
 function ProfileForm() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof profileSchema>>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      businessName: user?.businessName || "",
-      email: user?.email || "",
-    },
-  });
 
   const [businessData, setBusinessData] = useState<{
     business_name: string;
@@ -60,10 +62,23 @@ function ProfileForm() {
     tenant_id: 0,
     tenant_name: "",
   });
+  const form = useForm<z.infer<typeof profileSchema>>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      businessName: businessData?.business_name || "",
+      catalog: businessData?.catalog_type,
+    },
+  });
+
+  const [catalogTypes, setCatalogTypes] = useState([]);
 
   const onSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
-      await api.user.updateProfile(values);
+      const payload = {
+        business_name: values?.businessName,
+        catalog_type: values?.catalog,
+      };
+      await fetchandUpdateBussiness("PUT", payload);
       toast({ title: "Profile updated successfully!" });
     } catch (error) {
       toast({ title: "Failed to update profile", variant: "destructive" });
@@ -71,13 +86,17 @@ function ProfileForm() {
   };
 
   const fetchData = async () => {
-    const bussinessData = await fetchBussiness();
+    const bussinessData = await fetchandUpdateBussiness("GET", {});
+    const catalog = await fetchCatalogTypes();
     if (bussinessData) {
       setBusinessData(bussinessData);
       form.reset({
-        businessName: bussinessData.business_name ?? "",
-        email: user?.email ?? "",
+        businessName: bussinessData?.business_name ?? "",
+        catalog: bussinessData?.catalog_type ?? "",
       });
+    }
+    if (catalog) {
+      setCatalogTypes(catalog);
     }
   };
 
@@ -123,17 +142,38 @@ function ProfileForm() {
             />
             <FormField
               control={form.control}
-              name="email"
+              defaultValue={businessData?.catalog_type}
+              name="catalog"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
-                  </FormControl>
+                  <FormLabel>Catalog Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={businessData?.catalog_type} />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Catalog Types</SelectLabel>
+                        {catalogTypes?.map((catalog: any) => (
+                          <SelectItem
+                            key={catalog?.value}
+                            value={catalog?.value}
+                          >
+                            {catalog?.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <Button type="submit" disabled={form.formState.isSubmitting}>
               Save Changes
             </Button>

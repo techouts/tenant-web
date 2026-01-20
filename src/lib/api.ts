@@ -22,12 +22,22 @@ export const api = {
       };
     },
     signup: async (data: any) => {
-      await wait(500);
-      console.log("Signing up with:", data);
-      return {
-        token: "mock-jwt-token",
-        user: { id: "1", name: data.businessName, email: data.email },
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/signup/`;
+      const payload = {
+        admin_email: data?.email,
+        admin_password: data?.password,
+        business_name: data?.businessName,
+        plan_id: Number(data?.plan),
       };
+      const response = await loginHandler.apiCall(url, "POST", payload);
+      return response?.data;
+    },
+    logout: async (data: any) => {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/logout-all/`;
+      const payload = {
+        email: data?.email,
+      };
+      await loginHandler.apiCall(url, "POST", payload);
     },
     forgotPassword: async (email: string) => {
       await wait(500);
@@ -62,7 +72,7 @@ export const api = {
       return mockSearchResults.filter(
         (item) =>
           item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.description.toLowerCase().includes(query.toLowerCase())
+          item.description.toLowerCase().includes(query.toLowerCase()),
       );
     },
   },

@@ -96,12 +96,12 @@ export default function DashboardOverviewPage() {
   }, []);
 
   return (
-    <DashboardShell>
+    <DashboardShell className="mb-5">
       <DashboardHeader
         title={`Welcome, ${user?.tenant}`}
         description="Here's a quick look at your Forward account."
       />
-      <div className="flex gap-4">
+      <div className="grid gap-4 grid-cols-3">
         <Card className="grow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -112,6 +112,22 @@ export default function DashboardOverviewPage() {
           <CardContent>
             <div className="text-2xl font-bold">
               {usageToday?.today_used?.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              of {usageToday?.daily_limit?.toLocaleString()} requests
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="grow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              API Usage Monthly
+            </CardTitle>
+            <BarChart2 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {usageToday?.monthly_used?.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
               of {usageToday?.monthly_limit?.toLocaleString()} requests
@@ -125,11 +141,11 @@ export default function DashboardOverviewPage() {
           <CardContent>
             <div className="text-2xl font-bold">{planDetails?.plan}</div>
             <p className="text-xs text-muted-foreground">
-              ${planDetails?.price}/month
+              ₹{planDetails?.price}/month
             </p>
           </CardContent>
         </Card>
-        <Card className="grow">
+        <Card className="grow w-fit">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Tenant Details
@@ -150,9 +166,9 @@ export default function DashboardOverviewPage() {
             </div>
             <div className="text-sm font-bold flex items-center gap-2">
               Tenant SecretKey:
-              <p className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground text-wrap">
                 {tenantDetails?.secret_key}
-              </p>
+              </span>
             </div>
           </CardContent>
         </Card>

@@ -51,15 +51,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signup = async (data: any) => {
-    // const response = await api.auth.signup(data);
-    const signedUpUser = {
-      ...mockUser,
-      email: data.email,
-      businessName: data.businessName,
-    };
-    setUser(signedUpUser);
-    sessionStorage.setItem("user", JSON.stringify(signedUpUser));
-    window.location.href = "/dashboard";
+    const response = await api.auth.signup(data);
+    if (Boolean(response)) {
+      window.location.href = "/login";
+    }
   };
 
   const logout = () => {

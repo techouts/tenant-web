@@ -23,11 +23,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/contexts/auth-context";
-import { pricingPlans } from "@/lib/data";
 import { Logo } from "@/components/logo";
 import { handler } from "@/services/loginApiService";
 import { useEffect, useState } from "react";
-import { DashboardPlans } from "../dashboard/apis";
 
 const signupSchema = z.object({
   businessName: z
@@ -37,11 +35,12 @@ const signupSchema = z.object({
   password: z.string(),
   plan: z.preprocess(
     (val) => Number(val),
-    z.number({ required_error: "You need to select a plan." })
+    z.number({ required_error: "You need to select a plan." }),
   ),
 });
 
 export default function SignupPage() {
+  const { signup } = useAuth();
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -54,14 +53,7 @@ export default function SignupPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/signup/`;
-    const payload = {
-      admin_email: values?.email,
-      admin_password: values?.password,
-      business_name: values?.businessName,
-      plan_id: Number(values?.plan),
-    };
-    const response = await handler.apiCall(url, "POST", payload);
+    await signup(values);
   };
 
   const fetchData = async () => {
@@ -161,7 +153,7 @@ export default function SignupPage() {
                               <div className="flex justify-between items-center">
                                 <span>{plan?.name}</span>
                                 <span className="font-bold">
-                                  ${plan?.price}
+                                  ₹{plan?.price}
                                   <span className="font-normal text-sm text-muted-foreground">
                                     /mo
                                   </span>

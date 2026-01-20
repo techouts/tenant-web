@@ -42,7 +42,6 @@ const SubscriptionPage = () => {
 
       <SubscriptionPlansTable
         data={subscriptionPlans}
-        // title="Current Plans"
         type="subscriptionPlans"
       />
 

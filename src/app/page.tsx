@@ -411,7 +411,7 @@ export default function Home() {
                       ) : (
                         <>
                           <span className="text-4xl font-bold">
-                            ${plan.price}
+                            {plan.price}
                           </span>
                           <span className="text-muted-foreground">/month</span>
                         </>
