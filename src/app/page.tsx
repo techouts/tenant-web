@@ -29,7 +29,7 @@ import {
 import { pricingPlans } from "@/lib/data";
 import { Logo } from "@/components/logo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -53,6 +53,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 const featureTabs = [
   {
@@ -148,6 +150,7 @@ const salesFormSchema = z.object({
 
 function ContactSalesForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const { toast } = useToast();
+
   const form = useForm<z.infer<typeof salesFormSchema>>({
     resolver: zodResolver(salesFormSchema),
     defaultValues: { name: "", email: "", companyName: "", message: "" },
@@ -236,6 +239,18 @@ function ContactSalesForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 export default function Home() {
   const [activeTab, setActiveTab] = React.useState(featureTabs[0].id);
   const [salesFormOpen, setSalesFormOpen] = React.useState(false);
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    if (user?.user?.role === "admin") {
+      router.replace("/admin");
+    } else {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, user, router]);
 
   return (
     <div className="flex flex-col min-h-screen">

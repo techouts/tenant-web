@@ -59,7 +59,7 @@ export default function DashboardLayout({
       router.push("/");
     }
     if (userRole === "admin") {
-      router.push("/admin/clients");
+      router.push("/admin");
     }
   }, [isAuthenticated, loading, router]);
 
