@@ -18,18 +18,19 @@ export const TenantRevenueTable = ({
           </tr>
         </thead>
         <tbody>
-          {data?.map((row) => (
-            <tr
-              key={row.tenant_id}
-              className="border-b border-border last:border-0"
-            >
-              <td className="p-3">{row.tenant_id}</td>
-              <td className="p-3">{row.tenant_name}</td>
-              <td className="p-3 text-right">
-                ₹{row.revenue.toLocaleString()}
-              </td>
-            </tr>
-          ))}
+          {data &&
+            data?.map((row) => (
+              <tr
+                key={row?.tenant_id}
+                className="border-b border-border last:border-0"
+              >
+                <td className="p-3">{row?.tenant_id}</td>
+                <td className="p-3">{row?.tenant_name}</td>
+                <td className="p-3 text-right">
+                  ₹{row?.revenue?.toLocaleString()}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

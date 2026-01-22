@@ -1,5 +1,4 @@
 "use client";
-
 import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,9 @@ import Link from "next/link";
 
 export function DashboardHeader() {
   const { user, logout } = useAuth();
-  const userInitials = "U";
+  const userEmail = user?.user?.email;
+  const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
+  const userInitials = user?.user?.tenant?.[0]?.toUpperCase() || "S";
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -35,31 +36,37 @@ export function DashboardHeader() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {user?.businessName}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user?.email}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/settings">
-              <UserIcon className="mr-2 h-4 w-4" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/billing">
-              <Settings className="mr-2 h-4 w-4" />
-              Billing
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout}>
+          {user?.user?.role !== "admin" && (
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {user?.user?.tenant}
+                </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+          )}
+          {user?.user?.role !== "admin" && <DropdownMenuSeparator />}
+          {user?.user?.role !== "admin" && (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/settings">
+                <UserIcon className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {user?.user?.role !== "admin" && (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/billing">
+                <Settings className="mr-2 h-4 w-4" />
+                Billing
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {user?.user?.role !== "admin" && <DropdownMenuSeparator />}
+          <DropdownMenuItem onClick={() => logout(userEmail, accessToken)}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

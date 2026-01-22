@@ -13,36 +13,31 @@ const refreshAxios = axios.create({
   },
 });
 
-// Flag to track if a refresh is in progress
 let isRefreshing = false;
-// Queue to hold failed requests
 let failedQueue: Array<{
   resolve: (token: string) => void;
   reject: (error: AxiosError) => void;
 }> = [];
 
-// Function to refresh the access token
 const refreshAccessToken = async (): Promise<any> => {
-  const url = "http://172.168.168.36:8004/token/refresh/";
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/token/refresh/`;
   const { data } = await refreshAxios.post(url, {
     refresh: localStorage.getItem("refreshToken"),
   });
   return data;
 };
-// Function to process the queue of failed requests
 const processQueue = (error: AxiosError | null, token: string | null) => {
   failedQueue.forEach((prom) => {
     if (error) {
-      prom.reject(error); // Reject the promise if there's an error
+      prom.reject(error);
     } else {
-      prom.resolve(token!); // Resolve the promise with the new token
+      prom.resolve(token!);
     }
   });
   window.location.reload();
-  failedQueue = []; // Clear the queue
+  failedQueue = [];
 };
 
-// Add a response interceptor
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: any) => {
@@ -62,13 +57,10 @@ axiosInstance.interceptors.response.use(
         try {
           const tokens = await refreshAccessToken();
           const newAccessToken = tokens?.access;
-          const newRefreshToken = tokens?.refresh;
 
           localStorage.setItem("accessToken", newAccessToken);
-          localStorage.setItem("refreshToken", newRefreshToken);
-          axiosInstance.defaults.headers[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
+          axiosInstance.defaults.headers["Authorization"] =
+            `Bearer ${newAccessToken}`;
           processQueue(null, newAccessToken);
           return axiosInstance(originalRequest);
         } catch (refreshError: any) {
@@ -91,7 +83,7 @@ axiosInstance.interceptors.response.use(
       });
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export { axiosInstance as axios };

@@ -2,6 +2,7 @@
 // In a real application, you would replace these with actual API calls to your backend.
 
 import { handler as loginHandler } from "@/services/loginApiService";
+import { handler as logoutHandler } from "@/services/apiService";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -18,6 +19,7 @@ export const api = {
           tenant: response?.data?.tenant,
           tenantId: response?.data?.tenant_id,
           sessionId: response?.data?.session_id,
+          email: response?.data?.email,
         },
       };
     },
@@ -32,12 +34,15 @@ export const api = {
       const response = await loginHandler.apiCall(url, "POST", payload);
       return response?.data;
     },
-    logout: async (data: any) => {
+    logout: async (data: any, token: any) => {
       const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/logout-all/`;
       const payload = {
-        email: data?.email,
+        email: data,
       };
-      await loginHandler.apiCall(url, "POST", payload);
+      const response = await logoutHandler.apiCall(url, "POST", payload, {
+        Authorization: `Bearer ${token}`,
+      });
+      return response;
     },
     forgotPassword: async (email: string) => {
       await wait(500);

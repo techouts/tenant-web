@@ -1,8 +1,7 @@
 import { axios } from "./axios-instance";
 import { ApiHandler, Response } from "./types";
 
-const accessToken =
-  JSON.parse(localStorage.getItem("userData") || "")?.accessToken || "";
+const accessToken = localStorage.getItem("accessToken") || "";
 
 export const handler: ApiHandler = {
   createRequest: (url: string, method: string, payload: any, headers: any) => {
@@ -35,7 +34,7 @@ export const handler: ApiHandler = {
     method: string,
     payload: any = "",
     headers: any = {},
-    codes?: number[]
+    codes?: number[],
   ) => {
     try {
       const apiConfig = handler.createRequest(url, method, payload, {

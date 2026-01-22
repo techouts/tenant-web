@@ -29,7 +29,8 @@ export default function DashboardLayout({
 }) {
   const { isAuthenticated, loading, logout, user } = useAuth();
   const router = useRouter();
-
+  const userEmail = user?.user?.email;
+  const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
   const role =
     JSON.parse(global?.window?.localStorage?.getItem("userData") || "{}")?.user
       ?.role || "";
@@ -80,7 +81,7 @@ export default function DashboardLayout({
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={logout}>
+              <SidebarMenuButton onClick={() => logout(userEmail, accessToken)}>
                 <LogOut />
                 <span>Logout</span>
               </SidebarMenuButton>

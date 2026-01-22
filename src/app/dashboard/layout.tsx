@@ -45,12 +45,14 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, loading, logout } = useAuth();
+  const { isAuthenticated, loading, logout, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const userRole = JSON.parse(
-    global?.window?.localStorage.getItem("userData") || "{}"
-  )?.user?.role || "";
+  const userRole =
+    JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
+      ?.role || "";
+  const userEmail = user?.user?.email;
+  const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
 
   React.useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -107,7 +109,7 @@ export default function DashboardLayout({
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={logout}>
+              <SidebarMenuButton onClick={() => logout(userEmail, accessToken)}>
                 <LogOut />
                 <span>Logout</span>
               </SidebarMenuButton>

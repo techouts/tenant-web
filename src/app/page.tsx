@@ -388,7 +388,7 @@ export default function Home() {
                     "flex flex-col",
                     plan.isPopular
                       ? "border-primary ring-2 ring-primary shadow-lg"
-                      : ""
+                      : "",
                   )}
                 >
                   <CardHeader className="pb-4">

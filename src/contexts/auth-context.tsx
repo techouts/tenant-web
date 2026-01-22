@@ -2,16 +2,15 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import type { User } from "@/lib/types";
-import { mockUser } from "@/lib/data";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {
-  user: User | null;
+  user: any | null;
   isAuthenticated: boolean;
   login: (data: any) => Promise<void>;
   signup: (data: any) => Promise<void>;
-  logout: () => void;
+  logout: (data: any, token: any) => Promise<void>;
   loading: boolean;
 }
 
@@ -23,7 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // In a real app, you'd verify a token here
     try {
       const storedUser = localStorage.getItem("userData");
       if (storedUser) {
@@ -41,8 +39,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (data: any) => {
     const response = await api.auth.login(data);
     const loggedInUser = { ...response };
-    setUser(loggedInUser);
-    localStorage.setItem("userData", JSON.stringify(loggedInUser));
+    const { accessToken, refreshToken, ...rest } = loggedInUser;
+    setUser(rest);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("userData", JSON.stringify(rest));
     if (loggedInUser?.user?.role === "admin") {
       router.push("/admin");
     } else {
@@ -57,10 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.clear();
-    window.location.href = "/";
+  const logout = async (data: any, token: any) => {
+    const response = await api.auth.logout(data, token);
+    if (!response?.error) {
+      setUser(null);
+      localStorage.clear();
+      window.location.href = "/";
+    }
   };
 
   const value = {

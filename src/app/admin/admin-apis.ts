@@ -15,6 +15,9 @@ export const fetchTotalRevenue = async () => {
 export const fetchTenantsRevenue = async () => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/revenue/tenant`;
   const response = await adminHandler.apiCall(url, "GET");
+  if (response?.error) {
+    return [];
+  }
   return response?.data;
 };
 
@@ -58,5 +61,17 @@ export const deleteTenant = async (tenantdomain: string) => {
 export const createSubscription = async (payload: any) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/subscription/plans/`;
   const response = await adminHandler.apiCall(url, "POST", payload);
+  return response?.data;
+};
+
+export const fetchApiQuotas = async () => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/api/quotas`;
+  const response = await adminHandler.apiCall(url, "GET");
+  return response?.data;
+};
+
+export const updateApiQuotas = async (payload: any) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/api/quotas`;
+  const response = await adminHandler.apiCall(url, "PUT", payload);
   return response?.data;
 };

@@ -35,7 +35,13 @@ const AdminDashboardPage = () => {
       tenant_name: string;
       revenue: number;
     }>
-  >([]);
+  >([
+    {
+      tenant_id: 0,
+      tenant_name: "",
+      revenue: 0,
+    },
+  ]);
 
   const [subscriptionEnding, setSubscriptionEnding] = useState<{
     month: string;
@@ -99,7 +105,7 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <TenantRevenueTable data={tenantsRevenue} />
+        <TenantRevenueTable data={tenantsRevenue || []} />
         <SubscriptionPlansTable
           data={subscriptionEnding?.subscriptions || []}
           title={`Subscription Ending This Month (${subscriptionEnding?.month})`}

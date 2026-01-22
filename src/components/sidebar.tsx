@@ -16,6 +16,10 @@ const NAV_ITEMS = [
     label: "Subscription Plans",
     href: "/admin/subscriptions",
   },
+  {
+    label: "Manage Apis Quota",
+    href: "/admin/api-quota",
+  },
 ];
 
 export function SuperAdminSidebar() {

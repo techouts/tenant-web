@@ -65,9 +65,7 @@ function PlanDetails() {
 
   const fetchData = async () => {
     const planDetails = await DashboardPlans();
-    console.log("planDetails: ", planDetails);
     const userPlanDetails = await TenantSubscriptionPlan();
-    console.log("userPlanDetails: ", userPlanDetails);
     if (planDetails) {
       setPlans(planDetails);
     }

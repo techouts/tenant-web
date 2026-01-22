@@ -1,8 +1,6 @@
 import { handler } from "@/services/apiService";
 
-const accessToken =
-  JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")
-    ?.accessToken || "";
+const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
 const client =
   JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
     ?.tenant || "";
