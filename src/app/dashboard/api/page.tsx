@@ -39,7 +39,6 @@ function ApiCredentials() {
 
   useEffect(() => {
     const fetchKeys = async () => {
-      const fetchedKeys = await api.user.getKeys();
       setKeys((prev) => ({
         ...prev,
         accessKey: secretKey,

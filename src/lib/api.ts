@@ -5,7 +5,7 @@ import { handler as loginHandler } from "@/services/loginApiService";
 import { handler as logoutHandler } from "@/services/apiService";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const userData = JSON.parse(localStorage.getItem("userData") || "{}") || {};
+
 export const api = {
   auth: {
     login: async (credentials: any) => {
@@ -94,7 +94,7 @@ export const api = {
     getKeys: async () => {
       await wait(500);
       return {
-        clientId: `${userData?.user?.tenantId}`,
+        clientId: `cid-mock-${Date.now().toString().slice(-6)}`,
         accessKey: `akey-mock-${Math.random().toString(36).substring(2, 15)}`,
         baseUrl: "https://api.forward.com/v1",
       };
