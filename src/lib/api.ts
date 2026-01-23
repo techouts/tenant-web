@@ -5,7 +5,7 @@ import { handler as loginHandler } from "@/services/loginApiService";
 import { handler as logoutHandler } from "@/services/apiService";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const userData = JSON.parse(localStorage.getItem("userData") || "{}") || null;
+const userData = JSON.parse(localStorage.getItem("userData") || "{}") || {};
 export const api = {
   auth: {
     login: async (credentials: any) => {

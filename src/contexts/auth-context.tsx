@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem("userData");
+      const storedUser = global?.window?.localStorage.getItem("userData");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       } else {
