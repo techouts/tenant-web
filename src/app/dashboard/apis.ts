@@ -190,3 +190,15 @@ export const fetchCatalogTypes = async () => {
   );
   return response?.data;
 };
+export const generateSecretApiKey = async () => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/refresh/secret-key/`;
+  const response = await handler.apiCall(
+    url,
+    "POST",
+    {},
+    {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  );
+  return response?.data;
+};
