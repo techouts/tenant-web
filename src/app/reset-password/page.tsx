@@ -1,11 +1,16 @@
-import { useSearchParams } from "next/navigation";
+"use client";
 import ResetPassword from "./ResetPassword";
 
-const ResetPasswordPage = () => {
-  const searchParams = useSearchParams();
-  const uid = searchParams?.get("uid");
-  const token = searchParams?.get("token");
-  return <ResetPassword uid={uid || ""} token={token} />;
+type PageProps = {
+  searchParams: {
+    uid?: string;
+    token?: string;
+  };
+};
+
+const ResetPasswordPage = async({ searchParams }: PageProps) => {
+  const { uid = "", token = "" } = await searchParams;
+  return <ResetPassword uid={uid} token={token} />;
 };
 
 export default ResetPasswordPage;
