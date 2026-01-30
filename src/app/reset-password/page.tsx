@@ -1,9 +1,11 @@
-import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import ResetPassword from "./ResetPassword";
 
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordPage />
-    </Suspense>
-  );
-}
+const ResetPasswordPage = () => {
+  const searchParams = useSearchParams();
+  const uid = searchParams?.get("uid");
+  const token = searchParams?.get("token");
+  return <ResetPassword uid={uid || ""} token={token} />;
+};
+
+export default ResetPasswordPage;

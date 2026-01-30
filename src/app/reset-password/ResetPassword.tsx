@@ -12,18 +12,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from "next/navigation";
 import { handler } from "@/services/apiService";
 
-const ResetPasswordPage = () => {
+const ResetPassword = ({ uid, token }: any) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const uid = searchParams?.get("uid");
-  const token = searchParams?.get("token");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,4 +108,4 @@ const ResetPasswordPage = () => {
   );
 };
 
-export default ResetPasswordPage;
+export default ResetPassword;
