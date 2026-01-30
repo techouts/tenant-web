@@ -54,7 +54,7 @@ export default function PlaygroundPage() {
         });
       }
     }, 500),
-    []
+    [],
   );
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,11 +142,8 @@ export default function PlaygroundPage() {
                         /> */}
                         <div className="flex-1">
                           <h3 className="font-semibold">
-                            {result?.hotel_name}
+                            {result?.hotel_name || result?.name}
                           </h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {result.description}
-                          </p>
                         </div>
                         {/* <div className="font-semibold text-lg">
                           ${result.price.toFixed(2)}
