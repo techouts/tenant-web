@@ -31,6 +31,7 @@ import {
   PurchasePlan,
   TenantSubscriptionPlan,
 } from "../apis";
+import redirectWithPayload from "@/lib/redirectWithPayload";
 
 function PlanDetails() {
   const { user } = useAuth();
@@ -76,11 +77,12 @@ function PlanDetails() {
 
   const handlePlanChange = async (planId: number) => {
     const response = await PurchasePlan(planId, tenantId);
-    fetchData();
-    toast({
-      title: "Plan Update",
-      description: "Your plan has been successfully updated.",
-    });
+    redirectWithPayload(response?.payment_url,response?.payload)
+    // fetchData();
+    // toast({
+    //   title: "Plan Update",
+    //   description: "Your plan has been successfully updated.",
+    // });
   };
 
   useEffect(() => {

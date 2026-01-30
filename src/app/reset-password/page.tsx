@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import {  useSearchParams } from "next/navigation";
+import { handler } from "@/services/apiService";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -20,13 +22,40 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const uid = searchParams?.get("uid");
+  const token = searchParams?.get("token");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/reset-password/`;
+    const payload = {
+      uid,
+      token,
+      new_password: confirmPassword,
+    };
     setError(null);
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (password?.length === 0 || confirmPassword?.length === 0) {
+      setError("Please fill in all fields");
       return;
+    }
+    if (password !== confirmPassword) {
+      setError("Password did not matched");
+      return;
+    }
+    try {
+      const response = await handler.apiCall(url, "POST", payload, {});
+      if (!response?.error) {
+        toast({
+          description: response?.data?.message,
+        });
+        window.location.href = "/login";
+      }
+    } catch (err) {
+      setError("Failed to reset password");
+      toast({
+        description: "Failed to reset password",
+      });
     }
     toast({
       description: "Your password has been reset successfully.",

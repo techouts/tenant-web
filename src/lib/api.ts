@@ -35,19 +35,28 @@ export const api = {
       return response?.data;
     },
     logout: async (data: any, token: any) => {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/logout-all/`;
-      const payload = {
-        email: data,
-      };
-      const response = await logoutHandler.apiCall(url, "POST", payload, {
-        Authorization: `Bearer ${token}`,
-      });
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/logout/`;
+      const response = await logoutHandler.apiCall(
+        url,
+        "POST",
+        {},
+        {
+          Authorization: `Bearer ${token}`,
+        },
+      );
       return response;
     },
     forgotPassword: async (email: string) => {
-      await wait(500);
-      console.log("Requesting password reset for:", email);
-      return { message: "Password reset link sent." };
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/forgot-password/`;
+      const response = await logoutHandler.apiCall(
+        url,
+        "POST",
+        {
+          email: email,
+        },
+        {},
+      );
+      return response;
     },
   },
   catalog: {
