@@ -77,7 +77,7 @@ function PlanDetails() {
 
   const handlePlanChange = async (planId: number) => {
     const response = await PurchasePlan(planId, tenantId);
-    redirectWithPayload(response?.payment_url,response?.payload)
+    redirectWithPayload(response?.payment_url, response?.payload);
     // fetchData();
     // toast({
     //   title: "Plan Update",
@@ -177,7 +177,7 @@ function BillingHistory() {
   React.useEffect(() => {
     const fetchHistory = async () => {
       const data = await getsubscriptionHistory();
-      if (data) {
+      if (Array?.isArray(data)) {
         setHistory(data);
       }
     };
@@ -225,6 +225,11 @@ function BillingHistory() {
               ))}
           </TableBody>
         </Table>
+        {!history && (
+          <CardDescription className="mx-auto w-fit">
+            View and download your past invoices.
+          </CardDescription>
+        )}
       </CardContent>
     </Card>
   );
