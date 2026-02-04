@@ -8,7 +8,6 @@ export const TenantRevenueTable = ({
       <div className="p-4 border-b border-border font-semibold">
         Tenant Revenue
       </div>
-
       <table className="w-full text-sm">
         <thead className="bg-muted">
           <tr>
@@ -25,7 +24,9 @@ export const TenantRevenueTable = ({
                 className="border-b border-border last:border-0"
               >
                 <td className="p-3">{row?.tenant_id}</td>
-                <td className="p-3">{row?.tenant_name}</td>
+                <td className="break-all">
+                  {row?.tenant_name}
+                </td>
                 <td className="p-3 text-right">
                   ₹{row?.revenue?.toLocaleString()}
                 </td>
@@ -33,6 +34,13 @@ export const TenantRevenueTable = ({
             ))}
         </tbody>
       </table>
+      {data?.length === 0 ? (
+        <div className="mx-auto">
+          <p className="p-0 text-center ">No Data Available</p>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

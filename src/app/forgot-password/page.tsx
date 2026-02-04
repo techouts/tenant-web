@@ -44,6 +44,14 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (values: z.infer<typeof forgotPasswordSchema>) => {
     try {
       const response = await api.auth.forgotPassword(values.email);
+      if (response?.error) {
+        toast({
+          title: "Error",
+          description: response?.data?.error,
+          variant: "destructive",
+        });
+        return setIsSubmitted(false);
+      }
       setIsSubmitted(true);
     } catch (error) {
       toast({

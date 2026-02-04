@@ -411,13 +411,13 @@ function CatalogList() {
 
   return (
     <Card className="h-full">
-      <CardHeader>
+      <CardHeader className="p-4">
         <CardTitle>Processing History</CardTitle>
         <CardDescription>
           History of your uploaded product catalogs and data pushes.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Table>
           <TableHeader>
             <TableRow>
@@ -472,16 +472,16 @@ export default function CatalogPage() {
         title="Catalog Management"
         description="Add products to your search index."
       />
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-3">
         <div className="md:col-span-1">
           <Card>
-            <CardHeader>
+            <CardHeader className="p-4">
               <CardTitle>Data Sources</CardTitle>
               <CardDescription>
                 Choose how to add data to your catalog.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <Tabs defaultValue="upload">
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="upload">Upload</TabsTrigger>

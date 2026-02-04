@@ -22,7 +22,7 @@ let failedQueue: Array<{
 const refreshAccessToken = async (): Promise<any> => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/token/refresh/`;
   const { data } = await refreshAxios.post(url, {
-    refresh: localStorage.getItem("refreshToken"),
+    refresh: global?.window?.localStorage.getItem("refreshToken"),
   });
   return data;
 };
@@ -58,14 +58,14 @@ axiosInstance.interceptors.response.use(
           const tokens = await refreshAccessToken();
           const newAccessToken = tokens?.access;
 
-          localStorage.setItem("accessToken", newAccessToken);
+          global?.window?.localStorage.setItem("accessToken", newAccessToken);
           axiosInstance.defaults.headers["Authorization"] =
             `Bearer ${newAccessToken}`;
           processQueue(null, newAccessToken);
           return axiosInstance(originalRequest);
         } catch (refreshError: any) {
           processQueue(refreshError as AxiosError, null);
-          localStorage.clear();
+          global?.window?.localStorage.clear();
           window.location.href = "/login";
           throw refreshError;
         } finally {

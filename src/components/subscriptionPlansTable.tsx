@@ -1,10 +1,21 @@
+import { convertDateFormat } from "@/lib/Date";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+
 export const SubscriptionPlansTable = ({
   data,
   title,
   type,
+  handlesubscriptionEnding,
 }: {
   data: any[];
   title?: string;
+  handlesubscriptionEnding?: any;
   type: "subscriptionPlans" | "subscriptionEnding";
 }) => {
   const headerFields =
@@ -17,23 +28,44 @@ export const SubscriptionPlansTable = ({
           "Trial Days",
           "Daily Limit",
           "Monthly Limit",
-          "Api Rate Limit",
+          // "Api Rate Limit",
           "Status",
           "Action",
         ]
       : ["Tenant Id", "Tenant Name", "Plan", "End Date", "Trial", "Days Left"];
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      {title && (
-        <div className="p-4 border-b border-border font-semibold">{title}</div>
-      )}
+    <div className="bg-card border border-border rounded-lg overflow-hidden col-span-2">
+      <div className="flex items-center">
+        {title && <div className="p-4 font-semibold">{title}</div>}
+        {type === "subscriptionEnding" && (
+          <div className="space-y-1 p-2">
+            <Select
+              // value={newJobSchedule}
+              onValueChange={(value) => handlesubscriptionEnding(value)}
+              defaultValue="quarter"
+            >
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Select Time Period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="quarter">Quarter</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm ">
-          <thead className="bg-muted">
+      <div className="overflow-auto h-[300px]">
+        <table className="w-full text-sm">
+          <thead className="bg-muted sticky top-0">
             <tr>
               {headerFields?.map((head) => (
-                <th key={head} className="text-left p-3 whitespace-nowrap">
+                <th
+                  key={head}
+                  className="text-left p-3 whitespace-nowrap  min-w-24"
+                >
                   {head}
                 </th>
               ))}
@@ -45,7 +77,7 @@ export const SubscriptionPlansTable = ({
               data?.map((plan) => (
                 <tr
                   key={plan?.code || plan?.tenant_id}
-                  className="border-b border-border last:border-0 "
+                  className="border-b border-border last:border-0"
                 >
                   <td className="p-3">{plan?.name || plan?.tenant_id}</td>
                   <td className="p-3">{plan?.code || plan?.tenant_name}</td>
@@ -55,7 +87,7 @@ export const SubscriptionPlansTable = ({
                       : plan?.plan}
                   </td>
                   <td className="p-3 capitalize">
-                    {plan?.billing_cycle || plan?.end_date?.split("T")[0]}
+                    {plan?.billing_cycle || convertDateFormat(plan?.end_date)}
                   </td>
                   <td className="p-3">
                     {plan?.trial_days || plan?.is_trial === true
@@ -68,9 +100,9 @@ export const SubscriptionPlansTable = ({
                   {type === "subscriptionPlans" && (
                     <td className="p-3">{plan?.monthly_api_limit}</td>
                   )}
-                  {type === "subscriptionPlans" && (
+                  {/* {type === "subscriptionPlans" && (
                     <td className="p-3">{plan?.api_rate_limit}</td>
-                  )}
+                  )} */}
                   {type === "subscriptionPlans" && (
                     <td className="p-3">
                       <p
@@ -98,6 +130,13 @@ export const SubscriptionPlansTable = ({
               ))}
           </tbody>
         </table>
+        {data?.length === 0 ? (
+          <div className="mx-auto">
+            <p className="p-0 text-center ">No Data Available</p>
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

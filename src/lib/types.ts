@@ -10,7 +10,7 @@ export type User = {
 export type Plan = {
   id: string;
   name: string;
-  price: number | 'custom';
+  price: number | "custom";
   description: string;
   features: string[];
   isPopular?: boolean;
@@ -23,7 +23,7 @@ export type CatalogFile = {
   id: string;
   name: string;
   uploadedAt: Date;
-  status: 'Processing' | 'Validated' | 'Error';
+  status: "Processing" | "Validated" | "Error";
   size: string;
 };
 
@@ -46,5 +46,13 @@ export type TeamMember = {
   name: string;
   email: string;
   avatarUrl: string;
-  role: 'Admin' | 'Developer' | 'Viewer';
+  role: "Admin" | "Developer" | "Viewer";
+};
+
+export type ApiSnippetInput = {
+  method: "GET" | "POST" | "PUT" | "DELETE";
+  url: string;
+  apiKey?: string;
+  headers?: Record<string, string>;
+  body?: Record<string, any>;
 };

@@ -23,6 +23,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { format } from "date-fns";
+import { fetchApiUsageData } from "../apis";
 
 function UsageMetrics() {
   const { user } = useAuth();
@@ -113,14 +114,14 @@ function UsageChart() {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const metrics = await api.user.getMetrics();
-      setData(metrics.usageHistory);
+      const apiUsageData = await fetchApiUsageData();
+      setData(apiUsageData);
       setLoading(false);
     };
     fetchHistory();
   }, []);
 
-  const chartData = data.slice(-timeframe);
+  // const chartData = data.slice(-timeframe);
 
   const chartConfig = {
     requests: {
@@ -140,7 +141,7 @@ function UsageChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-72 w-full">
-          <AreaChart data={chartData}>
+          <AreaChart data={data}>
             <defs>
               <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
                 <stop

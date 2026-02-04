@@ -14,12 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Copy, RefreshCw, Check, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api } from "@/lib/api";
-import {
-  generateApiIntegrationSnippets,
-  type ApiIntegrationSnippetsOutput,
-} from "@/ai/flows/generate-api-integration-snippets";
 import { generateSecretApiKey } from "../apis";
+import { generateApiSnippet, Language } from "@/lib/languageSwitcher";
 
 function ApiCredentials() {
   const { toast } = useToast();
@@ -29,6 +25,10 @@ function ApiCredentials() {
   });
   const [copied, setCopied] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [curlCopy, setCurlCopy] = useState<string | null>(null);
+  const [snippets, setSnippets] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeSnippet, setActiveSnippet] = useState("curl");
 
   const secretKey =
     JSON.parse(global?.window?.localStorage.getItem("secret-key") || "{}") ||
@@ -36,6 +36,9 @@ function ApiCredentials() {
   const tenantId =
     JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
       ?.tenantId || "";
+  const tenantDomain =
+    JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
+      ?.tenant || "";
 
   useEffect(() => {
     const fetchKeys = async () => {
@@ -45,8 +48,27 @@ function ApiCredentials() {
         clientId: tenantId,
       }));
     };
+
     fetchKeys();
-  }, []);
+  }, [keys?.accessKey]);
+
+  useEffect(() => {
+    const fetchSnippets = async () => {
+      setLoading(true);
+      const result = await generateApiSnippet(activeSnippet as Language, {
+        method: "GET",
+        url: "http://172.168.168.36:8011/api/feature/search?q=your-search-query&source=ginger",
+        headers: {
+          client: tenantDomain || "",
+          "x-secret-key": secretKey,
+        },
+        body: {},
+      });
+      setSnippets(result);
+      setLoading(false);
+    };
+    fetchSnippets();
+  }, [activeSnippet, keys?.accessKey]);
 
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -75,90 +97,11 @@ function ApiCredentials() {
     }
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>API Credentials</CardTitle>
-        <CardDescription>
-          Your secret keys to integrate Forward.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {Object.entries(keys).map(([key, value]) => {
-          const label = key
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase());
-          return (
-            <div key={key} className="space-y-1">
-              <label className="text-sm font-medium">{label}</label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  readOnly
-                  value={value || "Loading..."}
-                  className="font-mono"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleCopy(value, label)}
-                >
-                  {copied === label ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-        <Button
-          onClick={handleRegenerate}
-          disabled={isRegenerating}
-          variant="destructive"
-        >
-          {isRegenerating ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Regenerate Keys
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ApiIntegration() {
-  const [snippets, setSnippets] = useState<ApiIntegrationSnippetsOutput | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchSnippets = async () => {
-      setLoading(true);
-      const userKeys = await api.user.getKeys();
-      const result = await generateApiIntegrationSnippets({
-        clientId: userKeys.clientId,
-        accessKey: userKeys.accessKey,
-        baseUrl: userKeys.baseUrl,
-        query: "your-search-query",
-      });
-      setSnippets(result);
-      setLoading(false);
-    };
-    fetchSnippets();
-  }, []);
-
-  const handleCopy = (text: string, lang: string) => {
+  const handleCurlCopy = (text: string, lang: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(lang);
+    setCurlCopy(lang);
     toast({ title: `${lang} snippet copied!` });
-    setTimeout(() => setCopied(null), 2000);
+    setTimeout(() => setCurlCopy(null), 2000);
   };
 
   const CodeSnippet = ({ lang, code }: { lang: string; code?: string }) => (
@@ -174,9 +117,9 @@ function ApiIntegration() {
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2"
-            onClick={() => handleCopy(code || "", lang)}
+            onClick={() => handleCurlCopy(code || "", lang)}
           >
-            {copied === lang ? (
+            {curlCopy === lang ? (
               <Check className="h-4 w-4 text-green-500" />
             ) : (
               <Copy className="h-4 w-4" />
@@ -188,32 +131,109 @@ function ApiIntegration() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>API Integration</CardTitle>
-        <CardDescription>
-          Example code snippets to get you started quickly.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="curl">
-          <TabsList>
-            <TabsTrigger value="curl">cURL</TabsTrigger>
-            <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-            <TabsTrigger value="python">Python</TabsTrigger>
-          </TabsList>
-          <TabsContent value="curl">
-            <CodeSnippet lang="cURL" code={snippets?.curl} />
-          </TabsContent>
-          <TabsContent value="javascript">
-            <CodeSnippet lang="JavaScript" code={snippets?.javascript} />
-          </TabsContent>
-          <TabsContent value="python">
-            <CodeSnippet lang="Python" code={snippets?.python} />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>API Credentials</CardTitle>
+          <CardDescription>
+            Your secret keys to integrate Forward.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {Object.entries(keys).map(([key, value]) => {
+            const label = key
+              .replace(/([A-Z])/g, " $1")
+              .replace(/^./, (str) => str.toUpperCase());
+            return (
+              <div key={key} className="space-y-1">
+                <label className="text-sm font-medium">{label}</label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    readOnly
+                    value={value || "Loading..."}
+                    className="font-mono"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleCopy(value, label)}
+                  >
+                    {copied === label ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+          <Button
+            onClick={handleRegenerate}
+            disabled={isRegenerating}
+            variant="destructive"
+          >
+            {isRegenerating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Regenerate Keys
+          </Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>API Integration</CardTitle>
+          <CardDescription>
+            Example code snippets to get you started quickly.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="curl">
+            <TabsList>
+              <TabsTrigger
+                value="curl"
+                onClick={() => setActiveSnippet("curl")}
+              >
+                cURL
+              </TabsTrigger>
+              <TabsTrigger
+                value="javascript"
+                onClick={() => setActiveSnippet("javascript")}
+              >
+                JavaScript
+              </TabsTrigger>
+              <TabsTrigger
+                value="python"
+                onClick={() => setActiveSnippet("python")}
+              >
+                Python
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="curl">
+              <CodeSnippet
+                lang="cURL"
+                code={snippets || "No cURL snippet available"}
+              />
+            </TabsContent>
+            <TabsContent value="javascript">
+              <CodeSnippet
+                lang="JavaScript"
+                code={snippets || "No JavaScript snippet available"}
+              />
+            </TabsContent>
+            <TabsContent value="python">
+              <CodeSnippet
+                lang="Python"
+                code={snippets || "No Python snippet available"}
+              />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
@@ -226,7 +246,6 @@ export default function ApiPage() {
       />
       <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
         <ApiCredentials />
-        <ApiIntegration />
       </div>
     </DashboardShell>
   );

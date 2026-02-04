@@ -1,7 +1,7 @@
 import { axios } from "./axios-instance";
 import { ApiHandler, Response } from "./types";
 
-const accessToken = localStorage.getItem("accessToken") || "";
+const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
 
 export const handler: ApiHandler = {
   createRequest: (url: string, method: string, payload: any, headers: any) => {

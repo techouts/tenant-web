@@ -12,10 +12,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "./theme-toggle";
-import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import { Bell, LogOut, Settings, User as UserIcon } from "lucide-react";
 import Link from "next/link";
+import { Skeleton } from "./ui/skeleton";
+import SignupApprovalCard from "./SignUpApprovalCard";
+import { useState } from "react";
 
-export function DashboardHeader() {
+export function DashboardHeader({
+  handleGetNodifications,
+  isLoading,
+  notificationsData,
+}: {
+  handleGetNodifications?: any;
+  isLoading?: boolean;
+  notificationsData?: any[];
+} = {}) {
   const { user, logout } = useAuth();
   const userEmail = user?.user?.email;
   const accessToken = global?.window?.localStorage.getItem("accessToken") || "";
@@ -25,6 +36,56 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <SidebarTrigger className="md:hidden" />
       <div className="flex-1" />
+      {user?.user?.role === "admin" && (
+        <DropdownMenu
+          onOpenChange={(open: boolean) => {
+            if (open && handleGetNodifications) {
+              handleGetNodifications("GET");
+            }
+          }}
+        >
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Bell className="w-[1.2rem] h-[1.2rem]" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[500px]" align="end" forceMount>
+            <p className="p-2">Notifications</p>
+            <DropdownMenuSeparator />
+            <div className=" h-[300px] overflow-y-scroll">
+              {isLoading && (
+                <>
+                  {notificationsData?.map((_, index: number) => (
+                    <Skeleton
+                      key={index}
+                      className="rounded-lg border border-border bg-card p-4 shadow-sm flex items-center justify-between gap-4"
+                    />
+                  ))}
+                </>
+              )}
+              {!isLoading && notificationsData?.length !== 0 && (
+                <div className="mt-2 flex flex-col gap-4 p-2">
+                  {notificationsData?.map((notification: any) => (
+                    <SignupApprovalCard
+                      key={notification.id}
+                      data={notification}
+                      handleGetNodifications={handleGetNodifications}
+                      // setIsNotificationsOpen={() =>
+                      //   setIsNotificationsOpen(false)
+                      // }
+                    />
+                  ))}
+                </div>
+              )}
+              {notificationsData?.length === 0 && !isLoading && (
+                <p className="p-2 mx-auto w-fit mt-[25%] h-fit">
+                  No New Notifications Available
+                </p>
+              )}
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
       <ThemeToggle />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

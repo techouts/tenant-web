@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 
@@ -21,6 +21,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { LogOut } from "lucide-react";
 import { SuperAdminSidebar } from "@/components/sidebar";
+import { notifications } from "./admin-apis";
+import { toast } from "@/hooks/use-toast";
 
 export default function DashboardLayout({
   children,
@@ -34,6 +36,8 @@ export default function DashboardLayout({
   const role =
     JSON.parse(global?.window?.localStorage?.getItem("userData") || "{}")?.user
       ?.role || "";
+  const [isLoading, setIsLoading] = useState(false);
+  const [notificationsData, setNotificationsData] = useState<any[]>([]);
 
   React.useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -69,6 +73,39 @@ export default function DashboardLayout({
     );
   }
 
+  const handleGetNodifications = async (method: string, data?: any) => {
+    setIsLoading(true);
+    const payload = method === "GET" ? null : data;
+    try {
+      const response = await notifications(method, payload);
+      if (!response?.error) {
+        method === "GET" && setNotificationsData(response?.data || []);
+        if (method === "POST") {
+          toast({
+            title: "Success",
+            description: response?.data?.detail,
+          });
+          return;
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch notifications",
+        });
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch notifications",
+      });
+      setNotificationsData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -91,8 +128,12 @@ export default function DashboardLayout({
       </Sidebar>
 
       <SidebarInset>
-        <div className="flex flex-col min-h-screen">
-          <DashboardHeader />
+        <div className="flex flex-col min-h-screen pt-3">
+          <DashboardHeader
+            handleGetNodifications={handleGetNodifications}
+            notificationsData={notificationsData}
+            isLoading={isLoading}
+          />
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 md:gap-8">
             {children}
           </main>

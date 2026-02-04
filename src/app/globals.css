@@ -90,7 +90,7 @@
 
   /* Webkit browsers (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
     height: 4px;
   }
 
@@ -100,14 +100,11 @@
 
   ::-webkit-scrollbar-thumb {
     background-color: gray;
-    /* Dark gray thumb */
     border-radius: 4px;
-    /* Rounded corners */
   }
 
   ::-webkit-scrollbar-thumb:hover {
     background-color: "hsl(var(--background))";
-    /* Darker gray when hovered */
   }
 
   input[type="number"]::-webkit-outer-spin-button,

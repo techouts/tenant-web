@@ -26,13 +26,16 @@ export const api = {
     signup: async (data: any) => {
       const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/signup/`;
       const payload = {
-        admin_email: data?.email,
-        admin_password: data?.password,
+        email: data?.email,
         business_name: data?.businessName,
         plan_id: Number(data?.plan),
       };
-      const response = await loginHandler.apiCall(url, "POST", payload);
-      return response?.data;
+      try {
+        const response = await loginHandler.apiCall(url, "POST", payload);
+        return response;
+      } catch (err) {
+        return err;
+      }
     },
     logout: async (data: any, token: any) => {
       const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/logout/`;

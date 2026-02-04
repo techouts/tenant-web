@@ -1,4 +1,3 @@
-"use client";
 import ResetPassword from "./ResetPassword";
 
 type PageProps = {
@@ -8,8 +7,8 @@ type PageProps = {
   };
 };
 
-const ResetPasswordPage = async({ searchParams }: PageProps) => {
-  const { uid = "", token = "" } = await searchParams;
+const ResetPasswordPage = ({ searchParams }: PageProps) => {
+  const { uid = "", token = "" } = searchParams;
   return <ResetPassword uid={uid} token={token} />;
 };
 

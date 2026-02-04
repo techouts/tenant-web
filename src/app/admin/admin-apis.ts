@@ -6,8 +6,8 @@ export const fetchTenantsData = async () => {
   return response?.data;
 };
 
-export const fetchTotalRevenue = async () => {
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/revenue/total`;
+export const fetchTotalRevenue = async (range: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/revenue/total/?range=${range}`;
   const response = await adminHandler.apiCall(url, "GET");
   return response?.data;
 };
@@ -27,8 +27,8 @@ export const fetchSubscriptionPlans = async () => {
   return response?.data;
 };
 
-export const fetchSubscriptionEnding = async () => {
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/subscription/ending/`;
+export const fetchSubscriptionEnding = async (range: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/subscription/ending/?range=${range}`;
   const response = await adminHandler.apiCall(url, "GET");
   return response?.data;
 };
@@ -74,4 +74,14 @@ export const updateApiQuotas = async (payload: any) => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/api/quotas`;
   const response = await adminHandler.apiCall(url, "PUT", payload);
   return response?.data;
+};
+export const notifications = async (method: string, payload: any) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/approval/`;
+  const response = await adminHandler.apiCall(url, method, payload);
+  return response;
+};
+export const getRevenueHistory = async (year: number, month: string) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/revenue/history/?year=${year}&month=${month}`;
+  const response = await adminHandler.apiCall(url);
+  return response;
 };

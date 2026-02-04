@@ -94,20 +94,20 @@ export default function ManageApiQuotaPage() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div>
       <Card>
         <CardHeader>
           <CardTitle>Manage API Quotas</CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className=" h-[450px] overflow-y-scroll">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Tenant Name</TableHead>
                 <TableHead>Daily Limit</TableHead>
                 <TableHead>Monthly Limit</TableHead>
-                <TableHead>Api Rate Limit</TableHead>
+                {/* <TableHead>Api Rate Limit</TableHead> */}
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -120,7 +120,7 @@ export default function ManageApiQuotaPage() {
                   </TableCell>
                   <TableCell>{tenant?.api_usage?.daily_limit}</TableCell>
                   <TableCell>{tenant?.api_usage?.monthly_limit}</TableCell>
-                  <TableCell>{tenant?.api_rate_limit}</TableCell>
+                  {/* <TableCell>{tenant?.api_rate_limit}</TableCell> */}
                   <TableCell className="text-right">
                     <Button
                       variant="outline"

@@ -1,4 +1,8 @@
 "use client";
+
+import { capitalizeAndCleanString } from "@/lib/CapitalizeString";
+import { convertDateFormat } from "@/lib/Date";
+
 const TenantTable = ({
   tenants,
   openStatusModal,
@@ -52,8 +56,8 @@ const TenantTable = ({
                 <td className="p-3">{tenant?.id}</td>
                 <td className="p-3">{tenant?.domain}</td>
                 <td className="p-3">{tenant?.is_active ? "True" : "False"}</td>
-                <td className="p-3">{tenant?.created_at?.split("T")[0]}</td>
-                <td className="p-3">{tenant?.catalog_type}</td>
+                <td className="p-3">{convertDateFormat(tenant?.created_at)}</td>
+                <td className="p-3">{capitalizeAndCleanString(tenant?.catalog_type)}</td>
                 <td className="p-3 flex gap-2  w-[180px]">
                   <button
                     onClick={() => openStatusModal(tenant)}

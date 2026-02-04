@@ -11,8 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BarChart2, KeyRound, Search, Upload } from "lucide-react";
 import Link from "next/link";
-import { mockApiUsage } from "@/lib/data";
-import { handler } from "@/services/apiService";
 import { useEffect, useState } from "react";
 import {
   fetchApiUsageData,
@@ -55,6 +53,9 @@ export default function DashboardOverviewPage() {
   const user =
     JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")
       ?.user || "";
+  const tenantId =
+    JSON.parse(global?.window?.localStorage.getItem("userData") || "{}")?.user
+      ?.tenantId || "";
 
   const [usageToday, setUsageToday] = useState<any | null>(null);
   const [tenantDetails, setTenantDetails] = useState<{
@@ -145,7 +146,7 @@ export default function DashboardOverviewPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="grow w-fit">
+        <Card className="grow w-[600px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Tenant Details
@@ -154,9 +155,7 @@ export default function DashboardOverviewPage() {
           <CardContent>
             <div className="text-sm font-bold flex items-center gap-2">
               Tenant Id:
-              <p className="text-xs text-muted-foreground">
-                {tenantDetails?.tenant_id}
-              </p>
+              <p className="text-xs text-muted-foreground">{tenantId}</p>
             </div>
             <div className="text-sm font-bold flex items-center gap-2">
               Tenant Domain:

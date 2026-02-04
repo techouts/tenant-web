@@ -26,13 +26,14 @@ import { useAuth } from "@/contexts/auth-context";
 import { Logo } from "@/components/logo";
 import { handler } from "@/services/loginApiService";
 import { useEffect, useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
 const signupSchema = z.object({
   businessName: z
     .string()
     .min(2, { message: "Business name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string(),
+  // password: z.string(),
   plan: z.preprocess(
     (val) => Number(val),
     z.number({ required_error: "You need to select a plan." }),
@@ -47,13 +48,24 @@ export default function SignupPage() {
     defaultValues: {
       businessName: "",
       email: "",
-      password: "",
+      // password: "",
       plan: 0,
     },
   });
+  const [message, setMessage] = useState("");
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
-    await signup(values);
+    const response: any = await signup(values);
+    if (response?.status === 400) {
+      toast({
+        title: "Error",
+        description:
+          response?.response?.data || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setMessage(response?.data?.message);
   };
 
   const fetchData = async () => {
@@ -83,36 +95,40 @@ export default function SignupPage() {
             Join Forward and supercharge your product search.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form?.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form?.control}
-                name="businessName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Company Inc." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form?.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="name@yourcompany.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
+        {message?.length === 0 && (
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form?.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form?.control}
+                  name="businessName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Company Inc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form?.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="name@yourcompany.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* <FormField
                 control={form?.control}
                 name="password"
                 render={({ field }) => (
@@ -128,64 +144,72 @@ export default function SignupPage() {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-              <FormField
-                control={form?.control}
-                name="plan"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Select a plan</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={String(field.value)}
-                        className="flex flex-col space-y-1"
-                      >
-                        {subscriptionPlans?.map((plan: any) => (
-                          <FormItem
-                            key={plan?.id}
-                            className="flex items-center space-x-3 space-y-0 p-3 rounded-md border has-[:checked]:bg-accent/10 has-[:checked]:border-accent"
-                          >
-                            <FormControl>
-                              <RadioGroupItem value={String(plan.id)} />
-                            </FormControl>
-                            <FormLabel className="font-normal w-full cursor-pointer">
-                              <div className="flex justify-between items-center">
-                                <span>{plan?.name}</span>
-                                <span className="font-bold">
-                                  ₹{plan?.price}
-                                  <span className="font-normal text-sm text-muted-foreground">
-                                    /mo
+              /> */}
+                <FormField
+                  control={form?.control}
+                  name="plan"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Select a plan</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={String(field.value)}
+                          className="flex flex-col space-y-1"
+                        >
+                          {subscriptionPlans?.map((plan: any) => (
+                            <FormItem
+                              key={plan?.id}
+                              className="flex items-center space-x-3 space-y-0 p-3 rounded-md border has-[:checked]:bg-accent/10 has-[:checked]:border-accent"
+                            >
+                              <FormControl>
+                                <RadioGroupItem value={String(plan.id)} />
+                              </FormControl>
+                              <FormLabel className="font-normal w-full cursor-pointer">
+                                <div className="flex justify-between items-center">
+                                  <span>{plan?.name}</span>
+                                  <span className="font-bold">
+                                    ₹{plan?.price}
+                                    <span className="font-normal text-sm text-muted-foreground">
+                                      /mo
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
-                            </FormLabel>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting
-                  ? "Creating account..."
-                  : "Create Account"}
-              </Button>
-            </form>
-          </Form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Login
-            </Link>
-          </div>
-        </CardContent>
+                                </div>
+                              </FormLabel>
+                            </FormItem>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting
+                    ? "Creating account..."
+                    : "Create Account"}
+                </Button>
+              </form>
+            </Form>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{" "}
+              <Link href="/login" className="underline">
+                Login
+              </Link>
+            </div>
+          </CardContent>
+        )}
+        {message?.length > 0 && (
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground text-center">
+              {message}
+            </p>
+          </CardContent>
+        )}
       </Card>
     </div>
   );

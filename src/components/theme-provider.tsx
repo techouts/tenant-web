@@ -34,7 +34,7 @@ export function ThemeProvider({
     if (typeof window === 'undefined') {
       return defaultTheme;
     }
-    return (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    return (global?.window?.localStorage.getItem(storageKey) as Theme) || defaultTheme
   });
 
   React.useEffect(() => {
@@ -59,7 +59,7 @@ export function ThemeProvider({
     theme,
     setTheme: (theme: Theme) => {
       if (typeof window !== 'undefined') {
-        localStorage.setItem(storageKey, theme)
+        global?.window?.localStorage.setItem(storageKey, theme)
       }
       setTheme(theme)
     },

@@ -157,8 +157,7 @@ export const uploadCatalog = async (file: any) => {
   return response?.data;
 };
 
-export const search = async (query: any) => {
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}api/feature/search?q=${query}&source=ginger`;
+export const search = async (url: string) => {
   const response = await handler.apiCall(
     url,
     "GET",
@@ -168,7 +167,7 @@ export const search = async (query: any) => {
       client: client,
     },
   );
-  return response?.data;
+  return response;
 };
 
 export const fetchandUpdateBussiness = async (method: string, payload: any) => {

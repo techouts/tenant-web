@@ -16,7 +16,7 @@ export const handler: ApiHandler = {
 
   mapResponse: (response: any, codes: number[] = []) => {
     const { data, status, headers }: Response = response || {};
-    if ([200, ...codes]?.includes(status)) {
+    if ([200, 201, ...codes]?.includes(status)) {
       return {
         error: false,
         data,
@@ -32,7 +32,7 @@ export const handler: ApiHandler = {
     method: string,
     payload: any = "",
     headers: any = {},
-    codes?: number[]
+    codes?: number[],
   ) => {
     const apiConfig = handler.createRequest(url, method, payload, headers);
     const response = await axios(apiConfig);

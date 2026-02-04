@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       } else {
-        localStorage.removeItem("userData");
+        global?.window?.localStorage.removeItem("userData");
       }
     } catch (error) {
       console.error("Failed to parse user from session storage", error);
@@ -41,9 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const loggedInUser = { ...response };
     const { accessToken, refreshToken, ...rest } = loggedInUser;
     setUser(rest);
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("userData", JSON.stringify(rest));
+    global?.window?.localStorage.setItem("accessToken", accessToken);
+    global?.window?.localStorage.setItem("refreshToken", refreshToken);
+    global?.window?.localStorage.setItem("userData", JSON.stringify(rest));
     if (loggedInUser?.user?.role === "admin") {
       router.push("/admin");
     } else {
@@ -53,16 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (data: any) => {
     const response = await api.auth.signup(data);
-    if (Boolean(response)) {
-      window.location.href = "/login";
-    }
+    return response;
   };
 
   const logout = async (data: any, token: any) => {
     const response = await api.auth.logout(data, token);
     if (!response?.error) {
       setUser(null);
-      localStorage.clear();
+      global?.window?.localStorage.clear();
       window.location.href = "/";
     }
   };

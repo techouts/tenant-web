@@ -42,7 +42,7 @@ function PlanDetails() {
 
   useEffect(() => {
     const storedUser =
-      JSON.parse(localStorage.getItem("userData") || "{}") || {};
+      JSON.parse(global?.window?.localStorage.getItem("userData") || "{}") || {};
     if (storedUser) {
       const parsed = storedUser;
       setTenantId(parsed?.user?.tenantId ?? null);
