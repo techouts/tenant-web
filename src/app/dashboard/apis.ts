@@ -201,3 +201,21 @@ export const generateSecretApiKey = async () => {
   );
   return response?.data;
 };
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string,
+) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/change-password/`;
+  const response = await handler.apiCall(
+    url,
+    "POST",
+    {
+      new_password: newPassword,
+      current_password: currentPassword,
+    },
+    {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  );
+  return response;
+};

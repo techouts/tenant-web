@@ -28,7 +28,11 @@ import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
-import { fetchandUpdateBussiness, fetchCatalogTypes } from "../apis";
+import {
+  changePassword,
+  fetchandUpdateBussiness,
+  fetchCatalogTypes,
+} from "../apis";
 
 import {
   Select,
@@ -187,9 +191,8 @@ function ProfileForm() {
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required."),
-    newPassword: z
-      .string()
-      .min(8, "New password must be at least 8 characters."),
+    newPassword: z.string(),
+    // .min(8, "New password must be at least 8 characters."),
   })
   .refine((data) => data.currentPassword !== data.newPassword, {
     message: "New password must be different from the current password.",
@@ -205,9 +208,21 @@ function PasswordForm() {
 
   const onSubmit = async (values: z.infer<typeof passwordSchema>) => {
     try {
-      await api.user.updatePassword(values);
+      const response = await changePassword(
+        values?.currentPassword,
+        values?.newPassword,
+      );
+      console.log("response: ", response);
+      if (response?.error) {
+        toast({
+          title: "Error",
+          variant: "destructive",
+          description: response?.data?.error,
+        });
+        return;
+      }
       toast({ title: "Password updated successfully!" });
-      form.reset();
+      return form.reset();
     } catch (error) {
       toast({
         title: "Failed to update password",
