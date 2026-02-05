@@ -485,7 +485,6 @@ export default function CatalogPage() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await catalogSettings("GET", null);
-      console.log(response, "-0---");
       setSettingsData(response);
     };
     fetchData();

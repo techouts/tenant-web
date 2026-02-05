@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { catalogSettings } from "../apis";
 
 type Setting = {
   id: number;
@@ -50,7 +51,12 @@ const Settings = ({ data }: { data: Setting[] }) => {
     setRows(data);
   }, [data]);
 
-  const updateSetting = (id: number, key: any, value: boolean) => {
+  const updateSetting = async (id: number, key: any, value: boolean) => {
+    const payload = rows?.find((item) => item?.id === id);
+    const response = await catalogSettings("POST", {
+      ...payload,
+      [key]: value,
+    });
     setRows((prev) =>
       prev?.map((row) => (row?.id === id ? { ...row, [key]: value } : row)),
     );
