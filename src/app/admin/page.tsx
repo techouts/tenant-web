@@ -206,7 +206,7 @@ const AdminDashboardPage = () => {
                   }}
                   showOutsideDays={false}
                   fromYear={2000}
-                  toYear={2100}
+                  toYear={new Date().getFullYear()}
                   onMonthChange={(value) => {
                     const monthName = value?.toLocaleString("en-US", {
                       month: "short",
