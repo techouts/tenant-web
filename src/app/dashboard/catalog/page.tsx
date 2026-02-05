@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DashboardHeader, DashboardShell } from "@/components/dashboard-shell";
 import {
   Card,
@@ -33,7 +33,7 @@ import {
   Clock,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import type { CatalogFile } from "@/lib/types";
+import type { CatalogFile, CatalogType } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,7 +44,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { uploadCatalog } from "../apis";
+import { catalogSettings, fetchCatalogSync, uploadCatalog } from "../apis";
+import Settings from "./Settings";
 
 function CatalogUploader({ onUploadSuccess }: { onUploadSuccess: () => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -374,12 +375,12 @@ function SyncDataSource() {
 }
 
 function CatalogList() {
-  const [catalogs, setCatalogs] = useState<CatalogFile[]>([]);
+  const [catalogs, setCatalogs] = useState<CatalogType[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCatalogs = async () => {
     setLoading(true);
-    const data = await api.catalog.getUploadedCatalogs();
+    const data = await fetchCatalogSync();
     setCatalogs(data);
     setLoading(false);
   };
@@ -388,9 +389,9 @@ function CatalogList() {
     fetchCatalogs();
   }, []);
 
-  const getStatusBadge = (status: CatalogFile["status"]) => {
+  const getStatusBadge = (status: CatalogType["status"]) => {
     switch (status) {
-      case "Validated":
+      case "success":
         return (
           <Badge variant="default" className="bg-green-500 hover:bg-green-600">
             <CheckCircle className="mr-1 h-3 w-3" />
@@ -406,6 +407,13 @@ function CatalogList() {
             Error
           </Badge>
         );
+      default:
+        return (
+          <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+            <CheckCircle className="mr-1 h-3 w-3" />
+            Validated
+          </Badge>
+        );
     }
   };
 
@@ -417,47 +425,54 @@ function CatalogList() {
           History of your uploaded product catalogs and data pushes.
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-0">
-        <Table>
+      <CardContent className="p-0 h-[340px] flex flex-col">
+        <Table className="border-b">
           <TableHeader>
-            <TableRow>
+            <TableRow className="*:max-w-[150px]">
               <TableHead>File Name / Source</TableHead>
               <TableHead>Upload Date</TableHead>
               <TableHead>Size / Records</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {loading ? (
-              [...Array(3)].map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell className="h-12 animate-pulse bg-muted rounded-md"></TableCell>
-                  <TableCell className="h-12 animate-pulse bg-muted rounded-md"></TableCell>
-                  <TableCell className="h-12 animate-pulse bg-muted rounded-md"></TableCell>
-                  <TableCell className="h-12 animate-pulse bg-muted rounded-md"></TableCell>
-                </TableRow>
-              ))
-            ) : catalogs.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No catalogs uploaded yet.
-                </TableCell>
-              </TableRow>
-            ) : (
-              catalogs.map((catalog) => (
-                <TableRow key={catalog.id}>
-                  <TableCell className="font-medium flex items-center gap-2">
-                    <File className="h-4 w-4 text-muted-foreground" />
-                    {catalog.name}
-                  </TableCell>
-                  <TableCell>{format(catalog.uploadedAt, "PPp")}</TableCell>
-                  <TableCell>{catalog.size}</TableCell>
-                  <TableCell>{getStatusBadge(catalog.status)}</TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
         </Table>
+        <div className="flex-1 overflow-auto">
+          <Table>
+            <TableBody>
+              {loading ? (
+                [...Array(10)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="h-12 animate-pulse bg-muted" />
+                    <TableCell className="h-12 animate-pulse bg-muted" />
+                    <TableCell className="h-12 animate-pulse bg-muted" />
+                    <TableCell className="h-12 animate-pulse bg-muted" />
+                  </TableRow>
+                ))
+              ) : catalogs?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No catalogs uploaded yet.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                catalogs?.map((catalog) => (
+                  <TableRow
+                    key={catalog?.id}
+                    className="*:text-center *:min-w-28"
+                  >
+                    <TableCell className="flex items-center gap-2">
+                      <File className="h-4 w-4 text-muted-foreground" />
+                      {catalog?.file || catalog?.catalog_type}
+                    </TableCell>
+                    <TableCell>{format(catalog?.created_at, "PPp")}</TableCell>
+                    <TableCell>{catalog?.records}</TableCell>
+                    <TableCell>{getStatusBadge(catalog?.status)}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
@@ -465,9 +480,19 @@ function CatalogList() {
 
 export default function CatalogPage() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [settingsData, setSettingsData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await catalogSettings("GET", null);
+      console.log(response, "-0---");
+      setSettingsData(response);
+    };
+    fetchData();
+  }, []);
 
   return (
-    <DashboardShell>
+    <DashboardShell className="mb-4">
       <DashboardHeader
         title="Catalog Management"
         description="Add products to your search index."
@@ -510,6 +535,9 @@ export default function CatalogPage() {
         <div className="md:col-span-2">
           <CatalogList key={refreshKey} />
         </div>
+      </div>
+      <div>
+        <Settings data={settingsData} />
       </div>
     </DashboardShell>
   );

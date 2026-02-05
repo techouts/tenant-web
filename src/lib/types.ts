@@ -56,3 +56,23 @@ export type ApiSnippetInput = {
   headers?: Record<string, string>;
   body?: Record<string, any>;
 };
+
+export type CatalogType = {
+  catalog_type: string;
+  created_at: string;
+  duplicate_records: 0;
+  duration: string;
+  error: string;
+  failure_records: 0;
+  file: null;
+  file_type: null;
+  id: 1;
+  records: 69;
+  source: string;
+  status: string;
+  success_records: 1;
+  sync_id: string;
+  timestamp: string;
+  triggered_by: string;
+  updated_at: string;
+};

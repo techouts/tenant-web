@@ -219,3 +219,22 @@ export const changePassword = async (
   );
   return response;
 };
+export const fetchCatalogSync = async () => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/catalog-sync/`;
+  const response = await handler.apiCall(
+    url,
+    "GET",
+    {},
+    {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  );
+  return response?.data;
+};
+export const catalogSettings = async (method: string, payload: any = null) => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}tenants/catalog-settings-details/`;
+  const response = await handler.apiCall(url, method, payload, {
+    Authorization: `Bearer ${accessToken}`,
+  });
+  return response?.data;
+};
