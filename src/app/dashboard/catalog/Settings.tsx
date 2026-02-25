@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { catalogSettings } from "../apis";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 type Setting = {
   id: number;
@@ -46,7 +48,10 @@ const SwitchCell = ({ value, onChange }: SwitchCellProps) => {
 
 const Settings = ({ data }: { data: Setting[] }) => {
   const [rows, setRows] = useState<Setting[]>([]);
-
+  const [currentQuery, setCurrentQuery] = useState<string>("");
+  const filteredRows = rows?.filter((row) =>
+    row?.field?.toLowerCase()?.includes(currentQuery.toLowerCase()),
+  );
   useEffect(() => {
     setRows(data);
   }, [data]);
@@ -62,57 +67,79 @@ const Settings = ({ data }: { data: Setting[] }) => {
     );
   };
 
+  const handleQueryChange = (e: any) => {
+    const query = e.target.value;
+    setCurrentQuery(query);
+  };
+
   return (
-    <div className="rounded-lg border bg-background">
+    <div className="rounded-lg border bg-background ">
       <CardHeader className="p-4">
         <CardTitle>Catalog Settings</CardTitle>
         <CardDescription>
           Choose how to add data to your catalog.
         </CardDescription>
       </CardHeader>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Field</TableHead>
-            <TableHead className="text-center">Active</TableHead>
-            <TableHead className="text-center">Search</TableHead>
-            <TableHead className="text-center">Auto Suggest</TableHead>
-            <TableHead className="text-center">Response</TableHead>
-            <TableHead className="text-center">Facet</TableHead>
-            <TableHead className="text-center">Mapping</TableHead>
-            <TableHead>Mapping Name</TableHead>
-            <TableHead className="text-center">Mandatory</TableHead>
-          </TableRow>
-        </TableHeader>
+      <div className="relative max-w-sm ml-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search field name"
+          className="pl-10"
+          value={currentQuery}
+          onChange={handleQueryChange}
+        />
+      </div>
 
-        <TableBody>
-          {rows?.map((setting) => (
-            <TableRow key={setting?.id}>
-              {Object?.entries(setting)?.map(([key, value]) => (
-                <>
-                  {key !== "updated_at" && key !== "created_at" && (
-                    <TableCell>
-                      {key !== "id" &&
-                      key !== "field" &&
-                      key !== "mapping_name" ? (
-                        <SwitchCell
-                          value={value as boolean}
-                          onChange={(value) =>
-                            updateSetting(setting?.id, key, value)
-                          }
-                        />
-                      ) : (
-                        <Badge variant="secondary">{value || "NA"}</Badge>
-                      )}
-                    </TableCell>
-                  )}
-                </>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="overflow-auto h-[300px] mt-2">
+        <table className="w-full text-sm z-40">
+          <thead className="bg-muted sticky top-0 z-40">
+            <tr>
+              <th className="text-left p-3 whitespace-nowrap  min-w-3">ID</th>
+              <th className="text-left p-3 whitespace-nowrap  min-w-10">
+                Field
+              </th>
+              <th className="text-center ">Active</th>
+              <th className="text-center">Search</th>
+              <th className="text-center">Auto Suggest</th>
+              <th className="text-center">Response</th>
+              <th className="text-center">Facet</th>
+              <th className="text-center">Mapping</th>
+              <th>Mapping Name</th>
+              <th className="text-center">Mandatory</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredRows?.map((setting) => (
+              <tr
+                key={setting?.id}
+                className="border-b border-border last:border-0"
+              >
+                {Object?.entries(setting)?.map(([key, value]) => (
+                  <>
+                    {key !== "updated_at" && key !== "created_at" && (
+                      <td className="p-3">
+                        {key !== "id" &&
+                        key !== "field" &&
+                        key !== "mapping_name" ? (
+                          <SwitchCell
+                            value={value as boolean}
+                            onChange={(value) =>
+                              updateSetting(setting?.id, key, value)
+                            }
+                          />
+                        ) : (
+                          <Badge variant="secondary">{value || "NA"}</Badge>
+                        )}
+                      </td>
+                    )}
+                  </>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
